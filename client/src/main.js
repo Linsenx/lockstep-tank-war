@@ -11,14 +11,7 @@ class Game {
 
   currentFrame = 0;
   frameQueue = [];
-  isSpawn = false;
-
-  keypress = {
-    up: false,
-    down: false,
-    left: false,
-    right: false,
-  };
+  playerIsJoin = false;
 
   init() {
     this.initPIXI();
@@ -110,7 +103,7 @@ class Game {
     }
   }
 
-  playerSpawn() {
+  spawnPlayer() {
     this.selfId = Date.now() - Math.round(Math.random() * 1000);
     window.selfId = this.selfId;
     this.ws.send(`join,${this.selfId},100,100,-1`);
@@ -127,7 +120,7 @@ class Game {
       }
       const frame = this.frameQueue.shift();
       frame[1].forEach((cmd) => this.onMessage(cmd));
-      this.curFrame = frame[0];
+      this.currentFrame = frame[0];
 
       for (const id of this.playerIds) {
         this.players[id].logic();
@@ -146,9 +139,9 @@ class Game {
           tick();
         }
       } else if (buffer >= 2) {
-        if (this.isSpawn === false) {
-          this.playerSpawn();
-          this.isSpawn = true;
+        if (this.playerIsJoin === false) {
+          this.spawnPlayer();
+          this.playerIsJoin = true;
         }
         tick();
       }
